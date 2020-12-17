@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Aux from "../../hoc/Auxiliary";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
+import Modal from "../../components/UI/Modal/Modal";
+import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -20,17 +22,18 @@ class BurgerBuilder extends Component {
     },
     totalPrice: 4,
     purchaseable: false,
+    purchasing: false,
   };
 
-  updatePurchaseState (ingredients){
+  updatePurchaseState(ingredients) {
     const sum = Object.keys(ingredients) //and array of object values
-      .map(igKey => {
+      .map((igKey) => {
         return ingredients[igKey];
       })
       .reduce((sum, el) => {
         return sum + el;
-      }, 0)
-    this.setState({purchaseable: sum > 0})
+      }, 0);
+    this.setState({ purchaseable: sum > 0 });
   }
 
   addIngredientHandler = (type) => {
@@ -52,7 +55,7 @@ class BurgerBuilder extends Component {
   removeIngredientHandler = (type) => {
     //ingredient -
     const oldCount = this.state.ingredients[type]; //get the VALUE current state of this type of ingredient
-    if (oldCount <= 0 ){
+    if (oldCount <= 0) {
       return;
     }
     const updatedCount = oldCount - 1; //take that value and increase it by one.
@@ -69,16 +72,39 @@ class BurgerBuilder extends Component {
     this.updatePurchaseState(updatedIngredients);
   };
 
+  purchaseHandler = () => {
+    this.setState({ purchasing: true });
+  };
+
+  purchaseCancelHandler = () => {
+    this.setState({ purchasing: false });
+  };
+
+  purchaseContinueHandler = () => {
+    alert("You continue!");
+  };
+
   render() {
-    const disableInfo = {     //1) this contains all of the ingredients' states
-      ...this.state.ingredients
+    const disableInfo = {
+      //1) this contains all of the ingredients' states
+      ...this.state.ingredients,
     };
-    for(let key in disableInfo){
+    for (let key in disableInfo) {
       disableInfo[key] = disableInfo[key] <= 0; //2)this updates the copied state objects with boolean values.
     }
 
     return (
       <Aux>
+        <Modal
+          show={this.state.purchasing}
+          modcalClosed={this.purchaseCancelHandler}
+        >
+          <OrderSummary
+            purchaseCancelled={this.purchaseCancelHandler}
+            purchaseContinue={this.purchaseContinueHandler}
+            ingredients={this.state.ingredients}
+          />
+        </Modal>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
           ingredientAdded={this.addIngredientHandler}
@@ -86,6 +112,7 @@ class BurgerBuilder extends Component {
           disable={disableInfo} //3) we are now passing the state containing booleans under the name 'disable'
           price={this.state.totalPrice}
           purchaseable={this.state.purchaseable}
+          ordered={this.purchaseHandler}
         />
       </Aux>
     );

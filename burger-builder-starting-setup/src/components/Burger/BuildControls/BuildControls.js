@@ -22,7 +22,11 @@ const buildControls = (props) => (
         disabled={props.disable[item.type]} //4) props.disable is how this comp got it. It is being 'forwarded' under the name 'disabled' to each individual component only containing the boolean value of its ingredient.
       />
     ))}
-    <button className={classes.OrderButton} disabled={!props.purchaseable}>
+    <button
+      className={classes.OrderButton}
+      disabled={!props.purchaseable}
+      onClick={props.ordered}
+    >
       ORdER NoW
     </button>
   </div>

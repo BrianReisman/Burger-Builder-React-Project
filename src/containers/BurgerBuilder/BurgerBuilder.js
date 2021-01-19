@@ -26,6 +26,7 @@ class BurgerBuilder extends Component {
   };
   
   componentDidMount() {
+    // console.log(this.props)
     axios
       .get('https://react-my-burger-d8ef0-default-rtdb.firebaseio.com/ingredients.json') //.json added before firebase requires it
       .then(res => {
@@ -92,34 +93,17 @@ class BurgerBuilder extends Component {
   };
 
   purchaseContinueHandler = () => {
-    // alert("You continue!");
-    this.setState({ loading: true })
-    const order = {
-      ingredients: this.state.ingredients,
-      price: this.state.totalPrice, //for ecomm, recalc price on server to prevent people from tampering with it.
-      customer: {
-        name: 'B',
-        address: {
-          street: '1234 test Ave',
-          zip: '1234',
-          country: 'chicken',
-        },
-        email: 'asdf@asdf.com',
-      },
-      deliveryMethod: 'fastest',
+    // // alert("You continue!");
+    const queryParams = [];
+    for (let i in this.state.ingredients){
+      queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i])) //* encodeURIComponent helps with formatting like removing white space
     }
-    axios
-      .post('/orders.json', order) //adding .json is needed for firebase specifically. The path you want to send your data to
-      .then(res => {
-        console.log(res)
-        this.setState({ loading: false, purchasing: false })
-      })
-      .catch(err => {
-        console.log(err)
-        this.setState({ loading: false, purchasing: false })
-      })
-
-
+    queryParams.push('price=' + this.state.totalPrice)
+    const queryString = queryParams.join('&');
+    this.props.history.push({
+      pathname: '/checkout',
+      search: '?' + queryString,
+    })
   };
 
   render() {

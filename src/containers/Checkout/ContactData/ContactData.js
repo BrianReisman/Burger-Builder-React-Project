@@ -12,10 +12,16 @@ class ContactData extends Component {
       name: {
         elementType: "input",
         elementConfig: {
+          //*the html attributes
           type: "text",
           placeholder: "Your Name",
         },
         value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
       },
       street: {
         elementType: "input",
@@ -24,6 +30,11 @@ class ContactData extends Component {
           placeholder: "Street",
         },
         value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
       },
       zipCode: {
         elementType: "input",
@@ -32,6 +43,13 @@ class ContactData extends Component {
           placeholder: "Zip Code",
         },
         value: "",
+        validation: {
+          required: true,
+          minLength: 5,
+          maxLength: 5,
+        },
+        valid: false,
+        touched: false,
       },
       country: {
         elementType: "input",
@@ -40,6 +58,11 @@ class ContactData extends Component {
           placeholder: "Country",
         },
         value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
       },
       email: {
         elementType: "input",
@@ -48,6 +71,11 @@ class ContactData extends Component {
           placeholder: "Email",
         },
         value: "",
+        validation: {
+          required: true,
+        },
+        valid: false,
+        touched: false,
       },
       deliveryMethod: {
         elementType: "select",
@@ -57,29 +85,33 @@ class ContactData extends Component {
             { value: "cheapest", displayValue: "Cheapest" },
           ],
         },
-        value: "",
+        validation: {},
+        valid: true,
+        value: "cheapest",
       },
     },
     loading: false,
+    formIsValid: false,
   };
 
   orderHandler = (e) => {
     e.preventDefault();
 
     this.setState({ loading: true });
-    
+
     const formData = {}; //empty object initially
-    for (let formElementIdentifier in this.state.orderForm){ //*formElementIdentifier is name, email, country, etc
+    for (let formElementIdentifier in this.state.orderForm) {
+      //*formElementIdentifier is name, email, country, etc
       //*take formData (the empty object above) and dynamically based on which element we are on in our for/in loop create a property and assige it the value of this.state.orderForm[dynamically choose the element that we are dealing with in this iteration through the loop].value.
-      formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+      formData[formElementIdentifier] = this.state.orderForm[
+        formElementIdentifier
+      ].value;
     }
-
-
 
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.price, //for ecomm, recalc price on server to prevent people from tampering with it.
-      orderData: formData
+      orderData: formData,
     };
     axios
       .post("/orders.json", order) //adding .json is needed for firebase specifically. The path you want to send your data to
@@ -94,20 +126,54 @@ class ContactData extends Component {
     console.log(this.props.ingredients);
   };
 
+  checkValidity(value, rules) {
+    //*return true or false
+    let isValid = true;
+
+    if (rules.required) {
+      isValid = value.trim() !== "" && isValid;
+    }
+    //* MY solution if(rules.minLength && rules.maxLength){
+    //*   isValid = value.length === rules.minLength //*Greater than or equal to the min length set.
+    //* }
+    if (rules.minLength) {
+      isValid = value.length === rules.minLength && isValid; //*Greater than or equal to the min length set.
+    }
+
+    if (rules.maxLength) {
+      isValid = value.length <= rules.minLength && isValid; //*Greater than or equal to the min length set.
+    }
+    return isValid;
+  }
+
   inputChangedHandler = (e, inputId) => {
-    const updatedOrderForm = { //*this is a new (but shallow) copy of this.state.orderForm which means it only contains the
+    const updatedOrderForm = {
+      //*this is a new (but shallow) copy of this.state.orderForm which means it only contains the
       //*orderForm object and *its* key/value pairs. We can mutate the value of this.state.orderForm.name for instance
       //*but what we cannot do, that we want to do, is mutate the value of this.state.orderForm.name.value. For that...
-      ...this.state.orderForm
+      ...this.state.orderForm,
     };
-    const updatedFormElement = { //*We now need to make a copy of the nested level
-      ...updatedOrderForm[inputId] //* which is a copy of what we copied above, drilling one level further down, into the
+    const updatedFormElement = {
+      //*We now need to make a copy of the nested level
+      ...updatedOrderForm[inputId], //* which is a copy of what we copied above, drilling one level further down, into the
       //*property of this.state.orderForm dynamically based on the inputID we get from the onChange
     };
     updatedFormElement.value = e.target.value;
-    updatedOrderForm[inputId] = updatedFormElement //*the big object
-    this.setState({orderForm: updatedOrderForm})
-  }
+    updatedFormElement.valid = this.checkValidity(
+      updatedFormElement.value,
+      updatedFormElement.validation
+    );
+    updatedFormElement.touched = true;
+    updatedOrderForm[inputId] = updatedFormElement; //*the big object
+    console.log(updatedFormElement);
+
+    let formIsValid = true;
+    for (let inputIdentifiers in updatedOrderForm) {
+      formIsValid = updatedOrderForm[inputIdentifiers].valid && formIsValid;
+    }
+    //*first formIsValid is the property in state, the second formIsValid on the right of : is the local var.
+    this.setState({ orderForm: updatedOrderForm, formIsValid: formIsValid });
+  };
 
   render() {
     const formElementsArray = [];
@@ -118,21 +184,26 @@ class ContactData extends Component {
       });
     }
 
-    console.log(this.props);
     let form = (
       <form onSubmit={this.orderHandler}>
         {formElementsArray.map((formElement) => {
-          return <Input
-            key={formElement.id}
-            elementConfig={formElement.config.elementConfig}
-            elementType={formElement.config.elementType}
-            value={formElement.config.value}
-            changed={(event)=>{this.inputChangedHandler(event, formElement.id)}}
-          />;
+          return (
+            <Input
+              key={formElement.id}
+              elementConfig={formElement.config.elementConfig}
+              elementType={formElement.config.elementType}
+              value={formElement.config.value}
+              changed={(event) => {
+                this.inputChangedHandler(event, formElement.id);
+              }}
+              invalid={!formElement.config.valid}
+              shouldValidate={formElement.config.validation}
+              touched={formElement.config.touched}
+            />
+          );
         })}
-        <Button btnType="Success">
-          Order
-        </Button>
+        {/* //*this is not an HTML button so disabled is a prop passed and needs to be added to the components HTML button attribute. */}
+        <Button btnType="Success" disabled={!this.state.formIsValid}>Order</Button>
       </form>
     );
     if (this.state.loading) {

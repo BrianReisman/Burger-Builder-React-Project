@@ -25,3 +25,8 @@
   outline: none;
   background-color: #ccc;
 }
+
+.Invalid {
+  border: 1px solid tomato;
+  background-color: rgb(230, 143, 134);
+}

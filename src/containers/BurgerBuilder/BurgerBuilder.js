@@ -11,17 +11,10 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as actionTypes from '../../store/actions';
 
-const INGREDIENT_PRICES = {
-  salad: 0.5,
-  cheese: 0.4,
-  meat: 1.3,
-  bacon: 0.7,
-};
+
 
 class BurgerBuilder extends Component {
   state = {
-    totalPrice: 4,
-    purchaseable: false,
     purchasing: false,
     loading: false,
     error: false,
@@ -47,44 +40,44 @@ class BurgerBuilder extends Component {
       .reduce((sum, el) => {
         return sum + el;
       }, 0);
-    this.setState({ purchaseable: sum > 0 });
+    return sum > 0
   }
 
-  addIngredientHandler = (type) => {
-    //ingredient -
-    const oldCount = this.state.ingredients[type]; //get the VALUE current state of this type of ingredient
-    const updatedCount = oldCount + 1; //take that value and increase it by one.
-    const updatedIngredients = { ...this.state.ingredients }; //make a copy of the whole slice of state.
-    updatedIngredients[type] = updatedCount; //take the new value that had 1 added to it and apply it to the copy of state applied specifically for the appropriate ingrediant.
+  // addIngredientHandler = (type) => {
+  //   //ingredient -
+  //   const oldCount = this.state.ingredients[type]; //get the VALUE current state of this type of ingredient
+  //   const updatedCount = oldCount + 1; //take that value and increase it by one.
+  //   const updatedIngredients = { ...this.state.ingredients }; //make a copy of the whole slice of state.
+  //   updatedIngredients[type] = updatedCount; //take the new value that had 1 added to it and apply it to the copy of state applied specifically for the appropriate ingrediant.
 
-    //cost -
-    const priceAddition = INGREDIENT_PRICES[type]; //get the price for the ingredient being handled.
-    const oldPrice = this.state.totalPrice; //get the current total price from within state.
-    const newPrice = oldPrice + priceAddition; //using the state and the ingredient price you grabbed add them together.
+  //   //cost -
+  //   const priceAddition = INGREDIENT_PRICES[type]; //get the price for the ingredient being handled.
+  //   const oldPrice = this.state.totalPrice; //get the current total price from within state.
+  //   const newPrice = oldPrice + priceAddition; //using the state and the ingredient price you grabbed add them together.
 
-    //update both slices of state.
-    this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-    this.updatePurchaseState(updatedIngredients);
-  };
-  removeIngredientHandler = (type) => {
-    //ingredient -
-    const oldCount = this.state.ingredients[type]; //get the VALUE current state of this type of ingredient
-    if (oldCount <= 0) {
-      return;
-    }
-    const updatedCount = oldCount - 1; //take that value and increase it by one.
-    const updatedIngredients = { ...this.state.ingredients }; //make a copy of the whole slice of state.
-    updatedIngredients[type] = updatedCount; //take the new value that had 1 added to it and apply it to the copy of state applied specifically for the appropriate ingrediant.
+  //   //update both slices of state.
+  //   this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
+  //   this.updatePurchaseState(updatedIngredients);
+  // };
+  // removeIngredientHandler = (type) => {
+  //   //ingredient -
+  //   const oldCount = this.state.ingredients[type]; //get the VALUE current state of this type of ingredient
+  //   if (oldCount <= 0) {
+  //     return;
+  //   }
+  //   const updatedCount = oldCount - 1; //take that value and increase it by one.
+  //   const updatedIngredients = { ...this.state.ingredients }; //make a copy of the whole slice of state.
+  //   updatedIngredients[type] = updatedCount; //take the new value that had 1 added to it and apply it to the copy of state applied specifically for the appropriate ingrediant.
 
-    //cost -
-    const priceSubtraction = INGREDIENT_PRICES[type]; //get the price for the ingredient being handled.
-    const oldPrice = this.state.totalPrice; //get the current total price from within state.
-    const newPrice = oldPrice - priceSubtraction; //using the state and the ingredient price you grabbed add them together.
+  //   //cost -
+  //   const priceSubtraction = INGREDIENT_PRICES[type]; //get the price for the ingredient being handled.
+  //   const oldPrice = this.state.totalPrice; //get the current total price from within state.
+  //   const newPrice = oldPrice - priceSubtraction; //using the state and the ingredient price you grabbed add them together.
 
-    //update both slices of state.
-    this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
-    this.updatePurchaseState(updatedIngredients);
-  };
+  //   //update both slices of state.
+  //   this.setState({ totalPrice: newPrice, ingredients: updatedIngredients });
+  //   this.updatePurchaseState(updatedIngredients);
+  // };
 
   purchaseHandler = () => {
     this.setState({ purchasing: true });
@@ -96,20 +89,17 @@ class BurgerBuilder extends Component {
 
   purchaseContinueHandler = () => {
     // // alert("You continue!");
-    const queryParams = [];
-    for (let i in this.state.ingredients) {
-      queryParams.push(
-        encodeURIComponent(i) +
-          "=" +
-          encodeURIComponent(this.state.ingredients[i])
-      ); //* encodeURIComponent helps with formatting like removing white space
-    }
-    queryParams.push("price=" + this.state.totalPrice);
-    const queryString = queryParams.join("&");
-    this.props.history.push({
-      pathname: "/checkout",
-      search: "?" + queryString,
-    });
+    // const queryParams = [];
+    // for (let i in this.state.ingredients) {
+    //   queryParams.push(
+    //     encodeURIComponent(i) +
+    //       "=" +
+    //       encodeURIComponent(this.state.ingredients[i])
+    //   ); //* encodeURIComponent helps with formatting like removing white space
+    // }
+    // queryParams.push("price=" + this.state.totalPrice);
+    // const queryString = queryParams.join("&");
+    this.props.history.push("/checkout");
   };
 
   render() {
@@ -136,8 +126,8 @@ class BurgerBuilder extends Component {
             ingredientAdded={this.props.onIngredientAdded}
             ingredientRemoved={this.props.onIngredientRemoved}
             disable={disableInfo} //3) we are now passing the state containing booleans under the name 'disable'
-            price={this.state.totalPrice}
-            purchaseable={this.state.purchaseable}
+            price={this.props.price}
+            purchaseable={this.updatePurchaseState(this.props.ings)}
             ordered={this.purchaseHandler}
           />
         </Aux>
@@ -147,7 +137,7 @@ class BurgerBuilder extends Component {
           purchaseCancelled={this.purchaseCancelHandler}
           purchaseContinue={this.purchaseContinueHandler}
           ingredients={this.props.ings}
-          price={this.state.totalPrice}
+          price={this.props.price}
         />
       );
     }
@@ -176,7 +166,8 @@ const mapStateToProps = (state) => {
   return {
     //*ings will be the key of this mapped state object being passed to *this* component.
     //*the value of this will be the global state.ingredients
-    ings: state.ingredients
+    ings: state.ingredients,
+    price: state.totalPrice,
   };
 }
 

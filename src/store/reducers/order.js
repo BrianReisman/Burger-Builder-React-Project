@@ -3,10 +3,16 @@ import * as actionTypes from "../actions/actionTypes";
 const initState = {
   orders: [],
   loading: false, //sets to true once we start loading
+  purchased: false,
 };
 
 const reducer = (state = initState, action) => {
   switch (action.type) {
+    case actionTypes.PURCHASE_INIT:
+      return {
+        ...state,
+        purchased: false,
+      }
     case actionTypes.PURCHASE_BURGER_START:
       return {
         ...state,
@@ -20,7 +26,8 @@ const reducer = (state = initState, action) => {
       return {
         ...state,
         loading: false,
-        orders: [...state.orders.concat(newOrder)] //* .concat() returns a new array and therefore doesn't mutate state and can be used in reducer
+        purchased: true,
+        orders: [...state.orders.concat(newOrder)], //* .concat() returns a new array and therefore doesn't mutate state and can be used in reducer
       };
     case actionTypes.PURCHASE_BURGER_FAIL:
       return {

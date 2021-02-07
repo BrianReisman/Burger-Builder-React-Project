@@ -8,7 +8,7 @@ import Modal from "../../components/UI/Modal/Modal";
 import OrderSummary from "../../components/Burger/OrderSummary/OrderSummary";
 import Spinner from "../../components/UI/Spinner/Spinner";
 import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
-import * as burgerBuilderActions from '../../store/actions/index';
+import * as actions from '../../store/actions/index';
 import axios from "../../axios-orders";
 
 
@@ -89,7 +89,9 @@ class BurgerBuilder extends Component {
     // }
     // queryParams.push("price=" + this.state.totalPrice);
     // const queryString = queryParams.join("&");
+    this.props.onInitPurchase();
     this.props.history.push("/checkout");
+    
   };
 
   render() {
@@ -152,19 +154,20 @@ const mapStateToProps = (state) => {
   return {
     //*ings will be the key of this mapped state object being passed to *this* component.
     //*the value of this will be the global state.ingredients
-    ings: state.ingredients, //*this state. is the parameter of this function mapStateToProps.
-    price: state.totalPrice,
-    error: state.error,
+    ings: state.burgerBuilder.ingredients, //*this state. is the parameter of this function mapStateToProps.
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error, //!we have two reducers in createStore now (see index.js), Specifying which reducer that has been combined in now drilling down to the appropriate one since there are two
   };
 }
 
 const mapDispatchToProps = (dispatch) => {
   return{
-    onIngredientAdded: (ingName) => dispatch(burgerBuilderActions.addIngredient(ingName)),
-    onIngredientRemoved: (ingName) => dispatch(burgerBuilderActions.removeIngredient(ingName)),
-    onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients()) //!function inside dispatch()? invoke!
+    onIngredientAdded: (ingName) => dispatch(actions.addIngredient(ingName)),
+    onIngredientRemoved: (ingName) => dispatch(actions.removeIngredient(ingName)),
+    onInitIngredients: () => dispatch(actions.initIngredients()), //!function inside dispatch()? invoke!
     //*original version with dispatch() returning the action object.
-    // onIngredientRemoved: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName})
+    onInitPurchase: () => dispatch(actions.purchaseInit())
+        // onIngredientRemoved: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName})
   }
 }
 

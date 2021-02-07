@@ -32,10 +32,14 @@ export const purchaseBurger = (orderData) => { //* starts the same
       .post("/orders.json", orderData) //adding .json is needed for firebase specifically. The path you want to send your data to
       .then((res) => {
         console.log(res.data)
-        dispatch(purchaseBurgerSuccess(res.data, orderData))
+        dispatch(purchaseBurgerSuccess(res.data.name, orderData))
       })
       .catch((err) => {
         dispatch(purchaseBurgerFail(err))
       });
   }
+}
+
+export const purchaseInit = () => {
+  return {type: actionTypes.PURCHASE_INIT}
 }

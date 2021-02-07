@@ -36,8 +36,9 @@ const reducer = (state = initialState, action) => { //break statements are not n
       case actionTypes.SET_INGREDIENTS:
         return{
           ...state,
-          ingredients: action.ingredients,
+          ingredients: action.ingredients, //* could write out explicity if you wanted to control the order of properties
           error: false, //*resets if error existed earlier
+          totalPrice: 4,
         }
       case actionTypes.FETCH_INGREDIENTS_FAILED:
         return{

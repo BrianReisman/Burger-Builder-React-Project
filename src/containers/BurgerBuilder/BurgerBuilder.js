@@ -18,7 +18,7 @@ class BurgerBuilder extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props);
+    // console.log(this.props);
     this.props.onInitIngredients(); //!this is also invoked.
   }
 
@@ -147,8 +147,8 @@ class BurgerBuilder extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state)
-  console.log(state.ingredients)
+  // console.log(state)
+  // console.log(state.ingredients)
   return {
     //*ings will be the key of this mapped state object being passed to *this* component.
     //*the value of this will be the global state.ingredients

@@ -27,11 +27,11 @@ class Orders extends Component {
   }
 
   render() {
-    console.log(this.props)
+    // console.log(this.props)
     return (
       <div>
         {this.state.orders.map((order) => {
-          console.log(order)
+          // console.log(order)
           return <Order
             ingredients={order.ingredients}
             price={order.price}

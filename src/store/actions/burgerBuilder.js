@@ -33,7 +33,7 @@ export const initIngredients = () => { //no arguments expected
     axios
       .get('https://react-my-burger-d8ef0-default-rtdb.firebaseio.com/ingredients.json') //.json added before firebase requires it
       .then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         dispatch(setIngredients(res.data))
       })
       .catch(err => {

@@ -3,9 +3,9 @@ import Aux from "../../../hoc/Auxiliary/Auxiliary";
 import Button from "../../UI/Button/Button";
 
 class OrderSummary extends React.Component {
-  componentWillUpdate(){
-    console.log('{Order Summery}, WillUpdate')
-  }
+  // componentWillUpdate(){ //throws warnings
+  //   // console.log('{Order Summery}, WillUpdate')
+  // }
 
   render() {
     const ingredientSummary = Object.keys(this.props.ingredients).map((igKey) => {

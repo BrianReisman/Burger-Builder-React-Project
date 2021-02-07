@@ -16,7 +16,8 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(burgerBuilderReducer, composeEnhancers(
   applyMiddleware(thunk)
 ));
-console.log(store)
+// console.log(store)
+
 const app = (
   <Provider store={store}>
     <BrowserRouter>

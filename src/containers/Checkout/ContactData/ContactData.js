@@ -7,6 +7,8 @@ import classes from "./ContactData.css";
 import axios from "../../../axios-orders";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import withErrorHandler from '../../../hoc/withErrorHandler';
+import * as actions from '../../../store/actions/index';
 
 class ContactData extends Component {
   state = {
@@ -99,8 +101,6 @@ class ContactData extends Component {
   orderHandler = (e) => {
     e.preventDefault();
 
-    this.setState({ loading: true });
-
     const formData = {}; //empty object initially
     for (let formElementIdentifier in this.state.orderForm) {
       //*formElementIdentifier is name, email, country, etc
@@ -115,15 +115,8 @@ class ContactData extends Component {
       price: this.props.price, //for ecomm, recalc price on server to prevent people from tampering with it.
       orderData: formData,
     };
-    axios
-      .post("/orders.json", order) //adding .json is needed for firebase specifically. The path you want to send your data to
-      .then((res) => {
-        this.setState({ loading: false });
-        this.props.history.push("/");
-      })
-      .catch((err) => {
-        this.setState({ loading: false });
-      });
+
+    this.props.onOrderBurger(order) //*from mapDispatchToProps
   };
 
   checkValidity(value, rules) {
@@ -225,4 +218,8 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = (dispatch) => {
+  onOrderBurger: (orderData) => dispatch(actions.purchaseBurgerStart(orderData))
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(ContactData, axios));

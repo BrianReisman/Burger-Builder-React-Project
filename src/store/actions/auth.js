@@ -13,6 +13,18 @@ export const authFail = (error) => {
   return { type: actionTypes.AUTH_FAIL, error: error };
 };
 
+export const logout = () => {
+  return { type: actionTypes.AUTH_LOGOUT };
+};
+
+export const checkAuthTimeout = (expirationTime) => {
+  return (dispatch) => {
+    setTimeout(() => {
+      dispatch(logout())  //!<<<Always execute functions in dispatch()
+    }, expirationTime * 1000);
+  };
+};
+
 //*Here are the pieces put together into one asynch function
 export const auth = (email, password, isSignup) => {
   return (dispatch) => {
@@ -33,10 +45,11 @@ export const auth = (email, password, isSignup) => {
       .then((res) => {
         console.log(res);
         dispatch(authSuccess(res.data.idToken, res.data.localId));
+        dispatch(checkAuthTimeout(res.data.expiresIn));
       })
       .catch((err) => {
-        console.log(err);
-        dispatch(authFail(err));
+        console.log(err.response);
+        dispatch(authFail(err.response.data.error));
       });
   };
 };

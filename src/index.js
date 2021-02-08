@@ -10,11 +10,13 @@ import "./index.css";
 import App from "./App";
 import burgerBuilderReducer from './store/reducers/burgerBuilder';
 import orderReducer from './store/reducers/order';
+import authReducer from './store/reducers/auth';
 
 const rootReducer = combineReducers({ //rootReducer houses the combined reducers, it stitches them up.
   //Pass combineReducers an object with key/values where the value is your imported reducer
   burgerBuilder: burgerBuilderReducer,
   order: orderReducer,
+  auth: authReducer, //? "We're going to send authReducer in `on the property named auth` "
 }) //*this is ultimately the one variable you pass first to createStore that now contains both/all reducers you've built.
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

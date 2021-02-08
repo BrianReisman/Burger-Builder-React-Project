@@ -1,4 +1,7 @@
+//converted to extract case logic in 318. Not done here but yes, done in order.js in reducers
+
 import * as actionTypes from "../actions/actionTypes";
+import { updateObject } from "../utility";
 
 const initialState = {
   ingredients: null, //since they are being fetched form firebase
@@ -13,38 +16,82 @@ const INGREDIENT_PRICES = {
   bacon: 0.7,
 };
 
-const reducer = (state = initialState, action) => { //break statements are not needed since each case ends with return 
+const addIngredient = (state, action) => {
+  const updatedIngredient = {
+    [action.ingredientName]: state.ingredients[action.ingredientName] + 1,
+  };
+  const updatedIngredients = updateObject(state.ingredients, updatedIngredient); //util function expects object, so must pass it an object
+  const updatedState = {
+    ingredients: updatedIngredients,
+    totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName],
+  };
+  return updateObject(state, updatedState);
+
+  // return {
+  //   ...state,
+  //   ingredients: {
+  //     ...state.ingredients,
+  //     [action.ingredientName]: state.ingredients[action.ingredientName] + 1,
+  //   },
+  //   totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName],
+  // };
+};
+
+const removeIngredient = (state, action) => {
+  const updatedIng = {
+    [action.ingredientName]: state.ingredients[action.ingredientName] - 1,
+  };
+  const updatedIngs = updateObject(state.ingredients, updatedIng); //util function expects object, so must pass it an object
+  const updatedSt = {
+    ingredients: updatedIngs,
+    totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName],
+  };
+  return updateObject(state, updatedSt);
+
+  // return {
+  //   ...state,
+  //   ingredients: {
+  //     ...state.ingredients,
+  //     [action.ingredientName]: state.ingredients[action.ingredientName] - 1,
+  //   },
+  //   totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName],
+  // };
+};
+
+const setIngredients = (state, action) => {
+  return updateObject(state, {
+    ingredients: action.ingredients, //* could write out explicity if you wanted to control the order of properties
+    error: false, //*resets if error existed earlier
+    totalPrice: 4,
+  });
+
+  // return {
+  //   ...state,
+  //   ingredients: action.ingredients, //* could write out explicity if you wanted to control the order of properties
+  //   error: false, //*resets if error existed earlier
+  //   totalPrice: 4,
+  // };
+};
+
+const fetchIngredientsFailed = (state, action) => {
+  return updateObject(state, { error: true });
+
+  // return {
+  //   ...state,
+  //   error: true,
+  // };
+};
+const reducer = (state = initialState, action) => {
+  //break statements are not needed since each case ends with return
   switch (action.type) {
     case actionTypes.ADD_INGREDIENT:
-      return {
-        ...state,
-        ingredients: {
-          ...state.ingredients,
-          [action.ingredientName]: state.ingredients[action.ingredientName] + 1
-        },
-        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
-      }
-      case actionTypes.REMOVE_INGREDIENT:
-        return {
-          ...state,
-          ingredients: {
-            ...state.ingredients,
-            [action.ingredientName]: state.ingredients[action.ingredientName] - 1
-          },
-          totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
-      }
-      case actionTypes.SET_INGREDIENTS:
-        return{
-          ...state,
-          ingredients: action.ingredients, //* could write out explicity if you wanted to control the order of properties
-          error: false, //*resets if error existed earlier
-          totalPrice: 4,
-        }
-      case actionTypes.FETCH_INGREDIENTS_FAILED:
-        return{
-          ...state,
-          error: true,
-        }
+      return addIngredient(state, action);
+    case actionTypes.REMOVE_INGREDIENT:
+      return removeIngredient(state, action);
+    case actionTypes.SET_INGREDIENTS:
+      return setIngredients(state, action);
+    case actionTypes.FETCH_INGREDIENTS_FAILED:
+      return fetchIngredientsFailed(state, action);
     default:
       return state;
   }

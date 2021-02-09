@@ -24,12 +24,12 @@ export const purchaseBurgerStart = () => { //no argument needed, hey you, trigge
 
 //*asynch - call this one action, and conditionally dispatch ___success or ___fail based on axios call
 //!Note, asynch code does not return an action..?
-export const purchaseBurger = (orderData) => { //* starts the same
+export const purchaseBurger = (orderData, token) => { //* starts the same
   return dispatch => { //*instead of return an action {}, it returns a dispatch function
     dispatch(purchaseBurgerStart()); //* before we call axios, I want to dispatch this 
     //!Just exectuing purchaseBurgerStart() would return the action *here*. Wrapping it in dispatch() makes sure the action is returned to the store
     axios
-      .post("/orders.json", orderData) //adding .json is needed for firebase specifically. The path you want to send your data to
+      .post("/orders.json?auth=" + token, orderData) //adding .json is needed for firebase specifically. The path you want to send your data to
       .then((res) => {
         console.log(res.data)
         dispatch(purchaseBurgerSuccess(res.data.name, orderData))
@@ -64,11 +64,11 @@ export const fetchOrdersStart = () => {
     type: actionTypes.FETCH_ORDERS_START
   }
 }
-export const fetchOrders = () => {
+export const fetchOrders = (token) => {
   return dispatch => {
     dispatch(fetchOrdersStart())
     axios
-      .get("/orders.json")
+      .get("/orders.json?auth=" + token)
       .then((res) => {
         const fetchedOrders = []; //! Transform data here, not in the reducer.
         for (let key in res.data) {

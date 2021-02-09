@@ -70,7 +70,11 @@ class BurgerBuilder extends Component {
   // };
 
   purchaseHandler = () => {
-    this.setState({ purchasing: true });
+    if(this.props.isAuthenticated){
+      this.setState({ purchasing: true });
+    } else {
+      this.props.history.push('/auth')
+    }
   };
 
   purchaseCancelHandler = () => {
@@ -121,6 +125,7 @@ class BurgerBuilder extends Component {
             price={this.props.price}
             purchaseable={this.updatePurchaseState(this.props.ings)}
             ordered={this.purchaseHandler}
+            isAuth={this.props.isAuthenticated}
           />
         </Aux>
       );
@@ -157,6 +162,7 @@ const mapStateToProps = (state) => {
     ings: state.burgerBuilder.ingredients, //*this state. is the parameter of this function mapStateToProps.
     price: state.burgerBuilder.totalPrice,
     error: state.burgerBuilder.error, //!we have two reducers in createStore now (see index.js), Specifying which reducer that has been combined in now drilling down to the appropriate one since there are two
+    isAuthenticated: state.auth.token !== null,
   };
 }
 

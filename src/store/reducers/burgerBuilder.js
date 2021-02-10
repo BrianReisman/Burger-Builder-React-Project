@@ -7,6 +7,7 @@ const initialState = {
   ingredients: null, //since they are being fetched form firebase
   totalPrice: 4,
   error: false,
+  building: false,
 };
 
 const INGREDIENT_PRICES = {
@@ -24,6 +25,7 @@ const addIngredient = (state, action) => {
   const updatedState = {
     ingredients: updatedIngredients,
     totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName],
+    building: true,
   };
   return updateObject(state, updatedState);
 
@@ -45,6 +47,7 @@ const removeIngredient = (state, action) => {
   const updatedSt = {
     ingredients: updatedIngs,
     totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName],
+    building: true,
   };
   return updateObject(state, updatedSt);
 
@@ -63,6 +66,7 @@ const setIngredients = (state, action) => {
     ingredients: action.ingredients, //* could write out explicity if you wanted to control the order of properties
     error: false, //*resets if error existed earlier
     totalPrice: 4,
+    building: false,
   });
 
   // return {

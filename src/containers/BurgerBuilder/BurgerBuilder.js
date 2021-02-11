@@ -11,8 +11,8 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from '../../store/actions/index';
 import axios from "../../axios-orders";
 
-
-class BurgerBuilder extends Component {
+//this is now a named export for just the component without the react-redux connect. This is for testing purposes.
+export class BurgerBuilder extends Component {
   state = {
     purchasing: false,
   };

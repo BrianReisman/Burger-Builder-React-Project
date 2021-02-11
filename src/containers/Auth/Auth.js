@@ -7,7 +7,7 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 import classes from "./Auth.css";
 import * as actions from "../../store/actions/index";
 import { connect } from "react-redux";
-import { authSuccess } from "../../store/actions/auth";
+// import { authSuccess } from "../../store/actions/auth";
 import { updateObject, checkValidity } from "../../shared/utility";
 
 class Auth extends Component {

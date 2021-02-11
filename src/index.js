@@ -19,7 +19,11 @@ const rootReducer = combineReducers({ //rootReducer houses the combined reducers
   auth: authReducer, //? "We're going to send authReducer in `on the property named auth` "
 }) //*this is ultimately the one variable you pass first to createStore that now contains both/all reducers you've built.
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+//process is a global variable/object. that contains env (in the config file?)
+const composeEnhancers = process.env.NODE_ENV === 'development' ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : null || compose;
+
+
 
 // const store = createStore(reducer); //baseline with no middleware
 const store = createStore(rootReducer, composeEnhancers(

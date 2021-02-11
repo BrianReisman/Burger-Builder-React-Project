@@ -47,7 +47,7 @@ export const auth = (email, password, isSignup) => {
     axios
       .post(url, authData)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         // new Date() without an argument gives us now. with argument sets a time. outter sets the expirationData and inner is used to calulate now >>> when expiration happens
         const expirationDate = new Date(
           new Date().getTime() + res.data.expiresIn * 1000

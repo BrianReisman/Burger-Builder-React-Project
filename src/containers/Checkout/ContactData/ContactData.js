@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { render } from "react-dom";
 import { connect } from "react-redux";
 
 import Button from "../../../components/UI//Button/Button";
@@ -155,7 +154,6 @@ const updatedOrderForm = updateObject(this.state.orderForm, {
     // updatedFormElement.touched = true;
 
     // updatedOrderForm[inputId] = updatedFormElement; //*the big object
-    console.log(updatedFormElement);
 
     let formIsValid = true;
     for (let inputIdentifiers in updatedOrderForm) {

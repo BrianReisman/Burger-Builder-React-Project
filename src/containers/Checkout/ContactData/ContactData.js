@@ -9,6 +9,7 @@ import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
+import { updateObject } from "../../../shared/utility";
 
 class ContactData extends Component {
   state = {
@@ -140,24 +141,40 @@ class ContactData extends Component {
   }
 
   inputChangedHandler = (e, inputId) => {
-    const updatedOrderForm = {
-      //*this is a new (but shallow) copy of this.state.orderForm which means it only contains the
-      //*orderForm object and *its* key/value pairs. We can mutate the value of this.state.orderForm.name for instance
-      //*but what we cannot do, that we want to do, is mutate the value of this.state.orderForm.name.value. For that...
-      ...this.state.orderForm,
-    };
-    const updatedFormElement = {
-      //*We now need to make a copy of the nested level
-      ...updatedOrderForm[inputId], //* which is a copy of what we copied above, drilling one level further down, into the
-      //*property of this.state.orderForm dynamically based on the inputID we get from the onChange
-    };
-    updatedFormElement.value = e.target.value;
-    updatedFormElement.valid = this.checkValidity(
-      updatedFormElement.value,
-      updatedFormElement.validation
-    );
-    updatedFormElement.touched = true;
-    updatedOrderForm[inputId] = updatedFormElement; //*the big object
+
+    const updatedFormElement = updateObject(this.state.orderForm[inputId], {
+      value: e.target.value,
+      valid:this.checkValidity(
+        e.target.value,
+        this.state.orderForm[inputId].validation
+      ),
+      touched:true
+    })
+const updatedOrderForm = updateObject(this.state.orderForm, {
+  [inputId]: updatedFormElement
+})
+
+    // const updatedOrderForm = {
+    //   //*this is a new (but shallow) copy of this.state.orderForm which means it only contains the
+    //   //*orderForm object and *its* key/value pairs. We can mutate the value of this.state.orderForm.name for instance
+    //   //*but what we cannot do, that we want to do, is mutate the value of this.state.orderForm.name.value. For that...
+    //   ...this.state.orderForm,
+    // };
+
+
+    // const updatedFormElement = { //*replaced with updateObject()
+    //   //*We now need to make a copy of the nested level
+    //   ...updatedOrderForm[inputId], //* which is a copy of what we copied above, drilling one level further down, into the
+    //   //*property of this.state.orderForm dynamically based on the inputID we get from the onChange
+    // };
+    // updatedFormElement.value = e.target.value;
+    // updatedFormElement.valid = this.checkValidity(
+    //   updatedFormElement.value,
+    //   updatedFormElement.validation
+    // );
+    // updatedFormElement.touched = true;
+
+    // updatedOrderForm[inputId] = updatedFormElement; //*the big object
     console.log(updatedFormElement);
 
     let formIsValid = true;

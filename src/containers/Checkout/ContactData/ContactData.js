@@ -9,7 +9,7 @@ import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
-import { updateObject } from "../../../shared/utility";
+import { updateObject, checkValidity } from "../../../shared/utility";
 
 class ContactData extends Component {
   state = {
@@ -120,31 +120,11 @@ class ContactData extends Component {
     this.props.onOrderBurger(order, this.props.token); //*from mapDispatchToProps
   };
 
-  checkValidity(value, rules) {
-    //*return true or false
-    let isValid = true;
-
-    if (rules.required) {
-      isValid = value.trim() !== "" && isValid;
-    }
-    //* MY solution if(rules.minLength && rules.maxLength){
-    //*   isValid = value.length === rules.minLength //*Greater than or equal to the min length set.
-    //* }
-    if (rules.minLength) {
-      isValid = value.length === rules.minLength && isValid; //*Greater than or equal to the min length set.
-    }
-
-    if (rules.maxLength) {
-      isValid = value.length <= rules.minLength && isValid; //*Greater than or equal to the min length set.
-    }
-    return isValid;
-  }
-
   inputChangedHandler = (e, inputId) => {
 
     const updatedFormElement = updateObject(this.state.orderForm[inputId], {
       value: e.target.value,
-      valid:this.checkValidity(
+      valid:checkValidity(
         e.target.value,
         this.state.orderForm[inputId].validation
       ),
